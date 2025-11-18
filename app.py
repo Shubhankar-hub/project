@@ -12,8 +12,9 @@ import google.generativeai as genai
 
 load_dotenv()  # load key from .env
 
-API_KEY = os.getenv("GEMINI_API_KEY")
+API_KEY = st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=API_KEY)
+
 
 # ------------------------------------------------------
 # 🔑 GEMINI API CONFIG
@@ -36,7 +37,8 @@ def extract_text_from_pdf(pdf_file):
     pages = convert_from_path(
         temp_pdf_path,
         dpi=300,
-        poppler_path=r"C:\poppler\bin"   # <── REQUIRED FOR WINDOWS
+        pages = convert_from_path(temp_pdf_path, dpi=300)
+   # <── REQUIRED FOR WINDOWS
     )
 
     all_text = []
