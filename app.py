@@ -27,25 +27,30 @@ reader = easyocr.Reader(['en'])
 # ------------------------------------------------------
 # 🔍 OCR FUNCTIONS
 # ------------------------------------------------------
-def extract_text_from_pdf(pdf_file):
-    # Save PDF temporarily
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-        tmp.write(pdf_file.read())
-        temp_pdf_path = tmp.name
+import fitz  # PyMuPDF
+import tempfile
 
-    # Convert PDF → images using Poppler
-    pages = convert_from_path(
-        temp_pdf_path,
-        dpi=300,
-        pages = convert_from_path(temp_pdf_path, dpi=300)
-   # <── REQUIRED FOR WINDOWS
-    )
+def extract_text_from_pdf(pdf_file):
+    # Read PDF file bytes
+    pdf_bytes = pdf_file.read()
+
+    # Open PDF directly from bytes
+    pdf = fitz.open(stream=pdf_bytes, filetype="pdf")
 
     all_text = []
 
-    for page in pages:
-        page_np = np.array(page)
-        result = reader.readtext(page_np, detail=0)
+    # Loop through PDF pages
+    for page in pdf:
+        # Convert page → image (PNG)
+        pix = page.get_pixmap(dpi=200)
+        img_bytes = pix.tobytes("png")
+
+        # Convert bytes → numpy array for OCR
+        img = np.frombuffer(img_bytes, np.uint8)
+        img_np = cv2.imdecode(img, cv2.IMREAD_COLOR)
+
+        # OCR using EasyOCR
+        result = reader.readtext(img_np, detail=0)
         all_text.append("\n".join(result))
 
     return "\n\n".join(all_text)
