@@ -30,29 +30,24 @@ import fitz  # PyMuPDF
 import tempfile
 
 def extract_text_from_pdf(pdf_file):
-    # Read PDF file bytes
-    pdf_bytes = pdf_file.read()
+    pdf_bytes = pdf_file.getvalue()  # FIXED
 
-    # Open PDF directly from bytes
     pdf = fitz.open(stream=pdf_bytes, filetype="pdf")
 
     all_text = []
 
-    # Loop through PDF pages
     for page in pdf:
-        # Convert page → image (PNG)
-        pix = page.get_pixmap(dpi=200)
+        pix = page.get_pixmap(dpi=150)  # FIXED
         img_bytes = pix.tobytes("png")
 
-        # Convert bytes → numpy array for OCR
-        img = np.frombuffer(img_bytes, np.uint8)
-        img_np = cv2.imdecode(img, cv2.IMREAD_COLOR)
+        img_array = np.frombuffer(img_bytes, np.uint8)
+        img_np = cv2.imdecode(img_array, 1)  # FIXED
 
-        # OCR using EasyOCR
         result = reader.readtext(img_np, detail=0)
         all_text.append("\n".join(result))
 
     return "\n\n".join(all_text)
+
 
 
 def extract_text_from_image(image):
