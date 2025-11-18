@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 import os
 import google.generativeai as genai
 import cv2
-
 load_dotenv()  # load key from .env
 
 API_KEY = st.secrets["GEMINI_API_KEY"]
