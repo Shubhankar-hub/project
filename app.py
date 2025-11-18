@@ -1,7 +1,6 @@
 import streamlit as st
 import easyocr
 import google.generativeai as genai
-from pdf2image import convert_from_path
 from PIL import Image
 import numpy as np
 import tempfile
